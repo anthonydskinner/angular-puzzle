@@ -6,14 +6,15 @@
       formControlName="symbol"
       value=""
     />
-    <mat-error
-      ><span
+    <mat-error>
+      <span
         *ngIf="
           !stockPickerForm.get('symbol').valid &&
           stockPickerForm.get('symbol').touched
         "
-        >Please enter a symbol</span
       >
+        Please enter a symbol
+      </span>
     </mat-error>
   </mat-form-field>
 
