@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PriceQueryFacade } from '@coding-challenge/stocks/data-access-price-query';
 import { Subscription } from 'rxjs';
@@ -8,10 +8,11 @@ import { Subscription } from 'rxjs';
   templateUrl: './stocks.component.html',
   styleUrls: ['./stocks.component.css']
 })
-export class StocksComponent implements OnInit {
+export class StocksComponent implements OnInit, OnDestroy {
   stockPickerForm: FormGroup;
   symbol: string;
   period: string;
+  stockPickerFormSubsr: Subscription;
 
   quotes$ = this.priceQuery.priceQueries$;
 
@@ -33,9 +34,19 @@ export class StocksComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.stockPickerFormSubsr = this.stockPickerForm.valueChanges.subscribe(
+      () => {
+        this.getQuote();
+      }
+    );
+  }
 
-  fetchQuote() {
+  ngOnDestroy() {
+    this.stockPickerFormSubsr.unsubscribe();
+  }
+
+  getQuote() {
     if (this.stockPickerForm.valid) {
       const { symbol, period } = this.stockPickerForm.value;
       this.priceQuery.fetchQuote(symbol, period);
