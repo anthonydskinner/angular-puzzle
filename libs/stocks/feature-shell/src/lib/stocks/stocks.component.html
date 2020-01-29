@@ -4,8 +4,7 @@
       matInput
       placeholder="Symbol e.g AAPL"
       formControlName="symbol"
-      value=""
-    />
+      value=""/>
     <mat-error>
       <span
         *ngIf="
@@ -23,12 +22,47 @@
     <mat-select formControlName="period">
       <mat-option
         *ngFor="let timePeriod of timePeriods"
-        [value]="timePeriod.value"
-      >
+        [value]="timePeriod.value">
         {{ timePeriod.viewValue }}
       </mat-option>
     </mat-select>
   </mat-form-field>
+
+  <mat-form-field>
+    <input 
+      matInput 
+      formControlName="periodFromDate" 
+      [matDatepicker]="periodFrom" 
+      [max]="maxFromDate"
+      [min]="minFromDate"
+      placeholder="From">
+    <mat-datepicker-toggle 
+      matSuffix 
+      [for]="periodFrom">
+    </mat-datepicker-toggle>
+    <mat-datepicker 
+      #periodFrom>
+    </mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field> 
+    <input 
+      matInput 
+      formControlName="periodToDate" 
+      [matDatepicker]="periodTo" 
+      [max]="maxToDate"
+      [min]="minToDate"
+      placeholder="To">
+    <mat-datepicker-toggle 
+      matSuffix 
+      [for]="periodTo">
+    </mat-datepicker-toggle>
+    <mat-datepicker 
+      #periodTo>
+    </mat-datepicker>
+  </mat-form-field>
+
+
 </form>
 
 <coding-challenge-chart [data$]="quotes$"></coding-challenge-chart>

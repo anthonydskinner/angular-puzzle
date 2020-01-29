@@ -2,15 +2,15 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PriceQueryFacade } from '@coding-challenge/stocks/data-access-price-query';
 import { StoreModule } from '@ngrx/store';
-
 import { SharedUiChartModule } from '@coding-challenge/shared/ui/chart';
-
 
 import {
   MatFormFieldModule,
   MatInputModule,
   MatSelectModule,
-  MatButtonModule
+  MatButtonModule,
+  MatDatepickerModule,
+  MatNativeDateModule
 } from '@angular/material';
 
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -28,12 +28,14 @@ describe('StocksComponent', () => {
         MatInputModule,
         MatSelectModule,
         MatButtonModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
         NoopAnimationsModule,
         SharedUiChartModule,
         StoreModule.forRoot({})
       ],
       declarations: [StocksComponent],
-      providers: [PriceQueryFacade]
+      providers: [PriceQueryFacade, MatDatepickerModule]
     }).compileComponents();
   }));
 
@@ -41,10 +43,6 @@ describe('StocksComponent', () => {
     fixture = TestBed.createComponent(StocksComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  afterEach(() => {
-    fixture.destroy();
   });
 
   it('should create', () => {

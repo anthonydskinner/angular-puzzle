@@ -12,8 +12,14 @@ export class StocksComponent implements OnInit, OnDestroy {
   stockPickerForm: FormGroup;
   symbol: string;
   period: string;
+  periodFromDate: Date;
+  periodToDate: Date;
   stockPickerFormSubsr: Subscription;
+  maxFromDate: Date;
+  maxToDate: Date;
+  minToDate: Date;
 
+  todaysDate = new Date();
   quotes$ = this.priceQuery.priceQueries$;
 
   timePeriods = [
@@ -30,11 +36,16 @@ export class StocksComponent implements OnInit, OnDestroy {
   constructor(private fb: FormBuilder, private priceQuery: PriceQueryFacade) {
     this.stockPickerForm = fb.group({
       symbol: [null, Validators.required],
-      period: [null, Validators.required]
+      period: [null, Validators.required],
+      periodFromDate: [null],
+      periodToDate: [null]
     });
   }
 
   ngOnInit() {
+    this.maxFromDate = this.todaysDate;
+    this.maxToDate = this.todaysDate;
+
     this.stockPickerFormSubsr = this.stockPickerForm.valueChanges.subscribe(
       () => {
         this.getQuote();
@@ -47,8 +58,12 @@ export class StocksComponent implements OnInit, OnDestroy {
   }
 
   getQuote() {
+    const { symbol, period, periodFromDate, periodToDate } = this.stockPickerForm.value;
+
+    this.minToDate = periodFromDate;
+    this.maxFromDate = periodToDate;
+
     if (this.stockPickerForm.valid) {
-      const { symbol, period } = this.stockPickerForm.value;
       this.priceQuery.fetchQuote(symbol, period);
     }
   }
