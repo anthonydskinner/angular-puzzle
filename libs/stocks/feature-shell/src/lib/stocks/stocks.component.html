@@ -19,15 +19,52 @@
   </mat-form-field>
 
   <mat-form-field>
-    <mat-label>Favorite time period</mat-label>
-    <mat-select formControlName="period">
-      <mat-option
-        *ngFor="let timePeriod of timePeriods"
-        [value]="timePeriod.value"
+    <input
+      matInput
+      formControlName="periodFromDate"
+      [matDatepicker]="periodFrom"
+      [matDatepickerFilter]="dateFilter"
+      [max]="maxDate"
+      placeholder="From"
+      (click)="periodFrom.open()"
+    />
+    <mat-datepicker-toggle matSuffix [for]="periodFrom">
+    </mat-datepicker-toggle>
+    <mat-datepicker #periodFrom> </mat-datepicker>
+    <mat-error>
+      <span
+        *ngIf="
+          !stockPickerForm.get('periodFromDate').valid &&
+          stockPickerForm.get('periodFromDate').touched
+        "
       >
-        {{ timePeriod.viewValue }}
-      </mat-option>
-    </mat-select>
+        Date is not valid
+      </span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input
+      matInput
+      formControlName="periodToDate"
+      [matDatepicker]="periodTo"
+      [matDatepickerFilter]="dateFilter"
+      [max]="maxDate"
+      placeholder="To"
+      (click)="periodTo.open()"
+    />
+    <mat-datepicker-toggle matSuffix [for]="periodTo"> </mat-datepicker-toggle>
+    <mat-datepicker #periodTo> </mat-datepicker>
+    <mat-error>
+      <span
+        *ngIf="
+          !stockPickerForm.get('periodToDate').valid &&
+          stockPickerForm.get('periodToDate').touched
+        "
+      >
+        Date is not valid
+      </span>
+    </mat-error>
   </mat-form-field>
 </form>
 

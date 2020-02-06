@@ -13,8 +13,10 @@ import {
   PriceQueryFetched,
   PriceQueryFetchError
 } from './price-query.actions';
+
 import { PriceQueryPartialState } from './price-query.reducer';
 import { PriceQueryResponse } from './price-query.type';
+import { dateRangedPriceQueryResponse } from './price-query-transformer.util';
 
 @Injectable()
 export class PriceQueryEffects {
@@ -24,12 +26,21 @@ export class PriceQueryEffects {
       run: (action: FetchPriceQuery, state: PriceQueryPartialState) => {
         return this.httpClient
           .get(
-            `${this.env.apiURL}/beta/stock/${action.symbol}/chart/${
-              action.period
-            }?token=${this.env.apiKey}`
+            `${this.env.apiURL}/beta/stock/${action.symbol}/chart/max?token=${
+              this.env.apiKey
+            }`
           )
           .pipe(
-            map(resp => new PriceQueryFetched(resp as PriceQueryResponse[]))
+            map(
+              resp =>
+                new PriceQueryFetched(
+                  dateRangedPriceQueryResponse(
+                    resp as PriceQueryResponse[],
+                    action.periodFromDate,
+                    action.periodToDate
+                  )
+                )
+            )
           );
       },
 

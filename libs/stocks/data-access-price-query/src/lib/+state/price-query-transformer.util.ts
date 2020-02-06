@@ -25,3 +25,16 @@ export function transformPriceQueryResponse(
       } as PriceQuery)
   );
 }
+
+export function dateRangedPriceQueryResponse(
+  response: PriceQueryResponse[],
+  periodFromDate: Date,
+  periodToDate: Date
+): PriceQueryResponse[] {
+  return response.filter(priceQuery => {
+    const allReturnedDates = parse(priceQuery.date);
+    return (
+      allReturnedDates >= periodFromDate && allReturnedDates <= periodToDate
+    );
+  });
+}
