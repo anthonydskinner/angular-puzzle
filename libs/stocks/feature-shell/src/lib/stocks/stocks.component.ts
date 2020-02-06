@@ -11,60 +11,92 @@ import { Subscription } from 'rxjs';
 export class StocksComponent implements OnInit, OnDestroy {
   stockPickerForm: FormGroup;
   symbol: string;
-  period: string;
   periodFromDate: Date;
   periodToDate: Date;
+  maxDate: Date;
   stockPickerFormSubsr: Subscription;
-  maxFromDate: Date;
-  maxToDate: Date;
-  minToDate: Date;
+  stockPickerFromDateSubsr: Subscription;
+  stockPickerToDateSubsr: Subscription;
 
   todaysDate = new Date();
+
   quotes$ = this.priceQuery.priceQueries$;
 
-  timePeriods = [
-    { viewValue: 'All available data', value: 'max' },
-    { viewValue: 'Five years', value: '5y' },
-    { viewValue: 'Two years', value: '2y' },
-    { viewValue: 'One year', value: '1y' },
-    { viewValue: 'Year-to-date', value: 'ytd' },
-    { viewValue: 'Six months', value: '6m' },
-    { viewValue: 'Three months', value: '3m' },
-    { viewValue: 'One month', value: '1m' }
-  ];
+  dateFilter = (d: Date): boolean => {
+    const day = d.getDay();
+    return day !== 0 && day !== 6;
+  };
 
   constructor(private fb: FormBuilder, private priceQuery: PriceQueryFacade) {
     this.stockPickerForm = fb.group({
-      symbol: [null, Validators.required],
-      period: [null, Validators.required],
-      periodFromDate: [null],
-      periodToDate: [null]
+      symbol: ['', { validators: [Validators.required], updateOn: 'blur' }],
+      periodFromDate: [
+        '',
+        { validators: [Validators.required], updateOn: 'blur' }
+      ],
+      periodToDate: [
+        '',
+        { validators: [Validators.required], updateOn: 'blur' }
+      ]
     });
   }
 
   ngOnInit() {
-    this.maxFromDate = this.todaysDate;
-    this.maxToDate = this.todaysDate;
+    this.maxDate = this.todaysDate;
 
     this.stockPickerFormSubsr = this.stockPickerForm.valueChanges.subscribe(
       () => {
         this.getQuote();
       }
     );
+
+    this.stockPickerFromDateSubsr = this.stockPickerForm
+      .get('periodFromDate')
+      .valueChanges.subscribe(periodFromDate => {
+        const periodToDate = this.stockPickerForm.get('periodToDate').value;
+
+        if (periodToDate && periodFromDate > periodToDate) {
+          this.stockPickerForm.patchValue({
+            periodToDate: periodFromDate
+          });
+        }
+      });
+
+    this.stockPickerToDateSubsr = this.stockPickerForm
+      .get('periodToDate')
+      .valueChanges.subscribe(periodToDate => {
+        const periodFromDate = this.stockPickerForm.get('periodFromDate').value;
+
+        if (periodFromDate && periodToDate < periodFromDate) {
+          this.stockPickerForm.patchValue({
+            periodFromDate: periodToDate
+          });
+        }
+      });
   }
 
   ngOnDestroy() {
-    this.stockPickerFormSubsr.unsubscribe();
+    if (this.stockPickerFormSubsr) {
+      this.stockPickerFormSubsr.unsubscribe();
+    }
+
+    if (this.stockPickerFromDateSubsr) {
+      this.stockPickerFromDateSubsr.unsubscribe();
+    }
+
+    if (this.stockPickerToDateSubsr) {
+      this.stockPickerToDateSubsr.unsubscribe();
+    }
   }
 
   getQuote() {
-    const { symbol, period, periodFromDate, periodToDate } = this.stockPickerForm.value;
-
-    this.minToDate = periodFromDate;
-    this.maxFromDate = periodToDate;
-
     if (this.stockPickerForm.valid) {
-      this.priceQuery.fetchQuote(symbol, period);
+      const {
+        symbol,
+        periodFromDate,
+        periodToDate
+      } = this.stockPickerForm.value;
+      this.priceQuery.fetchQuote(symbol, periodFromDate, periodToDate);
     }
   }
 }

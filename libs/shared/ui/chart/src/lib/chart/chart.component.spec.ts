@@ -8,12 +8,10 @@ describe('ChartComponent', () => {
   let fixture: ComponentFixture<ChartComponent>;
 
   beforeEach(async(() => {
-    
     TestBed.configureTestingModule({
       imports: [GoogleChartsModule],
-      declarations: [ ChartComponent ]
-    })
-    .compileComponents();
+      declarations: [ChartComponent]
+    }).compileComponents();
   }));
 
   beforeEach(() => {

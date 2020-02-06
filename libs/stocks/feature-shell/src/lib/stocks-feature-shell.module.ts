@@ -26,9 +26,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatNativeDateModule,
     SharedUiChartModule
   ],
-  providers: [
-    MatDatepickerModule
-  ],
+  providers: [MatDatepickerModule],
   declarations: [StocksComponent]
 })
 export class StocksFeatureShellModule {}
