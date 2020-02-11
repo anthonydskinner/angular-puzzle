@@ -5,7 +5,7 @@
 import { Server } from 'hapi';
 import { environment } from './environments/environment';
 import CatboxMemory from '@hapi/catbox-memory';
-import req from 'request';
+import fetch from 'node-fetch';
 
 const init = async () => {
   const server = new Server({
@@ -25,16 +25,17 @@ const init = async () => {
   });
 
   const fetchStocks = async symbol => {
-    return new Promise((resolve, reject) => {
-      const url = `${environment.apiURL}/beta/stock/${
-        symbol.id
-      }/chart/max?token=${environment.apiKey}`;
-      req(url, (err, response, body) => {
-        if (response && response.statusCode === 200) {
-          resolve(body);
-        }
+    const url = `${environment.apiURL}/beta/stock/${symbol.id}/chart/max?token=${environment.apiKey}`;
+
+    return await fetch(url)
+      .then( response => response.json())
+      .then (data => {
+        return data;
+      })
+      .catch(error => {
+        return error
       });
-    });
+
   };
 
   const stocksCache = server.cache({
